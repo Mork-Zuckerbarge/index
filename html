@@ -67,6 +67,7 @@
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -98,24 +99,24 @@
             resultDiv.textContent = 'Fetching BBQ Index for ' + ticker + '...';
 
             try {
-                // Replace this URL with your BBQ Index API endpoint
-                const response = await fetch(`https://api.example.com/bbq-index?ticker=${encodeURIComponent(ticker)}`);
+                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
 
-                if (!response.ok) {
-                    throw new Error('Unable to fetch data. Please try again later.');
-                }
+                // Replace this with actual logic to fetch token data
+                // For example, lookup token metadata or associated accounts
+                const tokenData = await connection.getTokenAccountsByOwner(
+                    new solanaWeb3.PublicKey("YourPublicKeyHere"),
+                    { programId: solanaWeb3.TOKEN_PROGRAM_ID }
+                );
 
-                const data = await response.json();
+                // Example processing of token data
+                const accountCount = tokenData.value.length;
+                const firstAccount = tokenData.value[0]?.pubkey?.toString() || "N/A";
 
-                if (data.success) {
-                    resultDiv.innerHTML = `
-                        <h3>${ticker.toUpperCase()} BBQ Index Results</h3>
-                        <p><strong>BBQ Score:</strong> ${data.score}</p>
-                        <p><strong>Description:</strong> ${data.description}</p>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `<span class="error">${data.message || 'No results found for this ticker.'}</span>`;
-                }
+                resultDiv.innerHTML = `
+                    <h3>${ticker.toUpperCase()} BBQ Index Results</h3>
+                    <p><strong>Number of Token Accounts:</strong> ${accountCount}</p>
+                    <p><strong>First Account:</strong> ${firstAccount}</p>
+                `;
             } catch (error) {
                 console.error('Error:', error);
                 resultDiv.innerHTML = `<span class="error">Error fetching data: ${error.message}</span>`;
